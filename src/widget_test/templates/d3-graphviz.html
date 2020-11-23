@@ -1,21 +1,54 @@
+<!-- importing require first for notebook environments that don't have it -->
 <script src="https://requirejs.org/docs/release/2.3.6/minified/require.js"></script>
+
 <div id="graph" style="text-align: center;"></div>
 <script>
+// Using require since that way it should work with all notebook environments
 require.config({
     'paths': {
-        d3: 'https://d3js.org/d3.v5.min',
-        'd3-interpolate': 'https://d3js.org/d3-interpolate.v2.js',
-        'd3-path': 'https://d3js.org/d3-path.v2.js',
-        'd3-format': 'https://d3js.org/d3-format.v2.js',
-        "@hpcc-js/wasm": 'https://unpkg.com/@hpcc-js/wasm@0.3.11/dist/index.min',
-        graphviz: 'https://unpkg.com/d3-graphviz@3.0.5/build/d3-graphviz',
+        d3: '//d3js.org/d3.v5.min',
+        'd3-interpolate': '//d3js.org/d3-interpolate.v2',
+        'd3-selection': '//d3js.org/d3-selection.v2',
+        'd3-dispatch': '//d3js.org/d3-dispatch.v2',
+        'd3-ease': '//d3js.org/d3-ease.v2',
+        'd3-transition': '//d3js.org/d3-transition.v2',
+        'd3-timer': '//d3js.org/d3-timer.v2',
+        'd3-drag': '//d3js.org/d3-drag.v2',
+        'd3-zoom': '//d3js.org/d3-zoom.v2',
+        'd3-color': '//d3js.org/d3-color.v2',
+        'd3-path': '//d3js.org/d3-path.v2',
+        'd3-format': '//d3js.org/d3-format.v2',
+        "@hpcc-js/wasm": '//unpkg.com/@hpcc-js/wasm@0.3.11/dist/index.min',
+        graphviz: '//unpkg.com/d3-graphviz@3.0.5/build/d3-graphviz',
     },
+    shim: {
+        /*
+         * I believe your script is not AMD compliant (although I'm not entirely sure about that).
+         * Therefore I include this here.
+         */
+        graphviz: [
+            '@hpcc-js/wasm',
+            'd3',
+            'd3-selection',
+            'd3-dispatch',
+            'd3-transition',
+            'd3-timer',
+            'd3-color',
+            'd3-path',
+            'd3-path',
+            'd3-format'
+        ]
+    }
 });
 
+/*
+ * I believe require now knows that it should load graphviz after d3 (due to the config)
+ * It should be able to modify the d3, however "d3.select(...).graphviz is not a function" will be thrown by this code.
+ */
 require(["d3", "graphviz"], function(d3) {
-    console.log(d3)
+    console.log(d3, graphviz)
     var dotIndex = 0;
-    var graphviz = d3.select("#graph").graphviz()
+    var graphviz = d3.select("#graph").graphviz() // The error will be thrown here.
         .transition(function () {
             return d3.transition("main")
                 .ease(d3.easeLinear)
